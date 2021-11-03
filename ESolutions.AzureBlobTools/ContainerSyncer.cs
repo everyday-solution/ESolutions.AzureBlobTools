@@ -27,7 +27,8 @@ namespace ESolutions.AzureBlobTools
 				{
 					var data = sourceblob.DownloadContent();
 					targetblob.Upload(data.Value.Content);
-					logging($"Created on target.");
+					var sizeMbytes  = (blobItem.Properties?.ContentLength ?? 0.0) / 1024 / 1024; //Bytes => Mbytes
+					logging($"Created on target {blobItem.Name} with {sizeMbytes} Mbytes");
 				}
 				else
 				{
@@ -36,7 +37,7 @@ namespace ESolutions.AzureBlobTools
 
 				itemCount++;
 				contentSize += (blobItem.Properties?.ContentLength ?? 0.0) / 1024 / 1024 / 1024; //Bytes => Gbytes
-				Console.WriteLine("CNT: " + (itemCount) + " sum up to: " + contentSize);
+				logging("CNT: " + (itemCount) + " sum up to: " + contentSize);
 			}
 
 			await sourceClient.EnumerateBlobsInPages(
