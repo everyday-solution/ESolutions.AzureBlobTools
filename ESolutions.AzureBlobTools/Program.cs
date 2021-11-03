@@ -52,6 +52,7 @@ namespace ESolutions.AzureBlobTools
 				{
 					Console.WriteLine($"{runner.Key}) {runner.Title}");
 				}
+				Console.WriteLine("x) Exit");
 
 				input = Console.ReadLine();
 				var menuAction = menuItems.FirstOrDefault(runner => runner.Key == input);
