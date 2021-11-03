@@ -32,7 +32,8 @@ namespace ESolutions.AzureBlobTools
 			{
 				new MenuItem("a", "Get statistics of source", Program.GetStatistics),
 				new MenuItem("b", "Test sync status between source and target", Program.AreInSync),
-				new MenuItem("c", "Sync source to target", Program.Sync)
+				new MenuItem("c", "Sync source to target", Program.Sync),
+				new MenuItem("d", "Download all blobs", Program.DownloadAll)
 			};
 
 			await Program.DisplayMenu(menuItems);
@@ -106,6 +107,13 @@ namespace ESolutions.AzureBlobTools
 		public async static Task Sync()
 		{
 			await ContainerSyncer.Sync(sourceClient, targetClient, (log) => { Console.WriteLine(log); });
+		}
+		#endregion
+
+		#region DownloadAll
+		public async static Task DownloadAll()
+		{
+			await sourceClient.DownloadAll((log) => { Console.WriteLine(log); });
 		}
 		#endregion
 	}

@@ -34,5 +34,12 @@ namespace ESolutions.AzureBlobTools
 		/// <returns></returns>
 		BlobClient GetBlobClient(
 			String blobName);
+
+		/// <summary>
+		/// Downloads all.
+		/// </summary>
+		/// <param name="logging">The logging.</param>
+		/// <returns></returns>
+		Task DownloadAll(Action<String> logging);
 	}
 }

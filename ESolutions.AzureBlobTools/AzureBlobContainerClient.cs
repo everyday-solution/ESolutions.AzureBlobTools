@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,10 @@ namespace ESolutions.AzureBlobTools
 		//Fields
 		#region blobContainerClient
 		private BlobContainerClient blobContainerClient = null;
+		#endregion
+
+		#region guid
+		private Guid guid = Guid.NewGuid();
 		#endregion
 
 		//Constructors
@@ -30,7 +35,7 @@ namespace ESolutions.AzureBlobTools
 		{
 			var result = new Statistics();
 
-			void PageCallback (Page<BlobItem> page)
+			void PageCallback(Page<BlobItem> page)
 			{
 				result.PageCount++;
 			}
@@ -61,7 +66,7 @@ namespace ESolutions.AzureBlobTools
 			{
 				logging($"Enumerate blob page: {pageCount}");
 				pageCallback(page);
-				
+
 				foreach (var item in page.Values)
 				{
 					logging($"Enumerate blob: {itemCount}");
@@ -78,6 +83,29 @@ namespace ESolutions.AzureBlobTools
 		public BlobClient GetBlobClient(String blobName)
 		{
 			return this.blobContainerClient.GetBlobClient(blobName);
+		}
+		#endregion
+
+		#region DownloadAll
+		public async Task DownloadAll(Action<string> logging)
+		{
+			void PageCallback(Page<BlobItem> page)
+			{
+			}
+
+			void BlobCallback(BlobItem blobItem)
+			{
+				var sourceblob = this.blobContainerClient.GetBlobClient(blobItem.Name);
+				var userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+				var downloadsPath = Path.Combine(userPath, "Downloads");
+				var downloadsDI = new DirectoryInfo(downloadsPath);
+				var singleDownloadsDI = downloadsDI.CreateSubdirectory(this.guid.ToString());
+
+				var filePath = Path.Combine(singleDownloadsDI.FullName, blobItem.Name);
+				var data = sourceblob.DownloadTo(filePath);
+			}
+
+			await this.EnumerateBlobsInPages(logging, PageCallback, BlobCallback);
 		}
 		#endregion
 	}
