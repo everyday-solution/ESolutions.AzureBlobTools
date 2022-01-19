@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,10 @@ namespace ESolutions.AzureBlobTools
 		private static IContainerClient targetClient = null;
 		#endregion
 
+		#region LocalDirectory
+		private static DirectoryInfo localDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+		#endregion
+
 		//Methods
 		#region Main
 		/// <summary>
@@ -27,13 +32,16 @@ namespace ESolutions.AzureBlobTools
 		{
 			Program.sourceClient = Program.GetClient("Source");
 			Program.targetClient = Program.GetClient("Target");
+			Program.localDirectory = Program.GetLocalDirectory();
 
 			var menuItems = new List<MenuItem>()
 			{
 				new MenuItem("a", "Get statistics of source", Program.GetStatistics),
 				new MenuItem("b", "Test sync status between source and target", Program.AreInSync),
 				new MenuItem("c", "Sync source to target", Program.Sync),
-				new MenuItem("d", "Download all blobs", Program.DownloadAll)
+				new MenuItem("d", "Download all blobs", Program.DownloadAll),
+				new MenuItem("e", "Download blobs by name", Program.DownloadByName),
+				new MenuItem("f", "Upload blobs by name", Program.UploadByName),
 			};
 
 			await Program.DisplayMenu(menuItems);
@@ -86,6 +94,23 @@ namespace ESolutions.AzureBlobTools
 		}
 		#endregion
 
+		#region GetLocalDirectory
+		/// <summary>
+		/// Gets the local directory.
+		/// </summary>
+		/// <param name="title">The title.</param>
+		/// <returns></returns>
+		public static DirectoryInfo GetLocalDirectory()
+		{
+			Console.WriteLine($"=> local direcory");
+
+			Console.Write("Path: ");
+			var path = Console.ReadLine();
+
+			return new DirectoryInfo(path);
+		}
+		#endregion
+
 		#region GetStatistics
 		public async static Task GetStatistics()
 		{
@@ -114,6 +139,34 @@ namespace ESolutions.AzureBlobTools
 		public async static Task DownloadAll()
 		{
 			await sourceClient.DownloadAll((log) => { Console.WriteLine(log); });
+		}
+		#endregion
+
+		#region DownloadByName
+		public async static Task DownloadByName()
+		{
+			Console.WriteLine("Type filename to download or x to exit: ");
+
+			var filename = String.Empty;
+			do
+			{
+				Console.Write("filename: ");
+				filename = Console.ReadLine();
+				if (filename != "x")
+				{
+					await Program.sourceClient.DownloadOne(Program.localDirectory, filename, (log) => { Console.WriteLine(log); });
+				}
+			}
+			while (filename != "x");
+
+			Console.WriteLine($"exit {nameof(DownloadByName)}");
+		}
+		#endregion
+
+		#region UploadByName
+		public async static Task UploadByName()
+		{
+			await Task.Run(() => { });
 		}
 		#endregion
 	}

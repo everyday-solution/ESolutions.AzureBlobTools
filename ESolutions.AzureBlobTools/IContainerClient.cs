@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,5 +42,13 @@ namespace ESolutions.AzureBlobTools
 		/// <param name="logging">The logging.</param>
 		/// <returns></returns>
 		Task DownloadAll(Action<String> logging);
+
+		/// <summary>
+		/// Downloads the one.
+		/// </summary>
+		/// <param name="filename">The filename.</param>
+		/// <param name="logging">The logging.</param>
+		/// <returns></returns>
+		Task DownloadOne(DirectoryInfo localDirectory, String filename, Action<String> logging);
 	}
 }

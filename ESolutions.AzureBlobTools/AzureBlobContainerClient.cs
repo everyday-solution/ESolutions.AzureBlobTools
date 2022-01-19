@@ -108,5 +108,14 @@ namespace ESolutions.AzureBlobTools
 			await this.EnumerateBlobsInPages(logging, PageCallback, BlobCallback);
 		}
 		#endregion
+
+		#region DownloadOne
+		public async Task DownloadOne(DirectoryInfo loacalDirectory, string filename, Action<string> logging)
+		{
+			var sourceBlob = this.blobContainerClient.GetBlobClient(filename);
+			var filePath = Path.Combine(loacalDirectory.FullName, filename);
+			var data = await sourceBlob.DownloadToAsync(filePath);
+		}
+		#endregion
 	}
 }
